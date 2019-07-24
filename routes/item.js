@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const toArray = require( 'object-values-to-array' );
 
+const model = require("../models/itemModel");
+
 let arr = [];
 
 // @route POST item/create 
@@ -41,6 +43,15 @@ router.put("/updateItem", (req, res) => {
 router.delete("/deleteItem", (req, res) => {
     arr.shift()
     res.send(arr);
+});
+
+// @route GET item/test 
+// @desc test model
+// @access Public
+router.get("/test", (req, res) => {
+    model.find().then(
+        items => { console.log(items);}
+    ).catch(err => {console.log(err)})
 });
 
 module.exports = router;
