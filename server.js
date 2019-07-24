@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use("/item", item);
 
 //connect to database
-mongoose.connect('mongodb://localhost:27017/example',
+mongoose.connect('mongodb://localhost:27017/item',
     { useNewUrlParser: true }
 ).then(
     () => { console.log("Connection Successful") },

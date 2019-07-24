@@ -2,6 +2,6 @@ const mongoose = require("mongoose");
 
 const itemSchema = require("../schemas/itemSchema");
 
-const item = mongoose.model('items', itemSchema);
+const Item = mongoose.model('Item', itemSchema);
 
-module.exports = item;
+module.exports = Item;

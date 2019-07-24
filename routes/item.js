@@ -1,57 +1,81 @@
 const express = require("express");
 const router = express.Router();
-const toArray = require( 'object-values-to-array' );
-
-const model = require("../models/itemModel");
+const toArray = require('object-values-to-array');
+const item = require("../models/itemModel.js");
 
 let arr = [];
 
-// @route POST item/create 
+// @route POST item/addItem 
 // @desc Create an array from JSON
 // @access Public
-router.post("/create", (req, res) => {
-    arr = toArray(req.body);
-    res.send("Array created");
+router.post("/addItem", (req, res) => {
+    const newItem = new item({
+        username: req.body.username,
+        content: req.body.content
+    });
+    newItem.save()
+        .then(() => {
+            res.send("Item added");
+        })
+        .catch(err => res.status(404).json(err));
+
 });
 
 // @route GET item/getItems 
 // @desc Get the stored array
 // @access Public
 router.get("/getItems", (req, res) => {
-    res.send(arr);
+    const errors = {};
+    item.find()
+        .then(items => {
+            if (!items) {
+                errors.noItems = "There are no items";
+                res.status(404).json(errors);
+            }
+            res.json(items);
+        })
+        .catch(err => res.status(404).json(err));
 });
 
-// @route PUT item/addItem 
-// @desc Add item to the array
-// @access Public
-router.put("/addItem", (req, res) => {
-    arr = arr.concat(toArray(req.body));
-    res.send(arr);
-});
 
 // @route PUT item/updateItem
-// @desc Update first item in the array
+// @desc Update item in the array
 // @access Public
 router.put("/updateItem", (req, res) => {
-    arr[0] = toArray(req.body)[0];
-    res.send(arr);
+    item.updateOne({ 'username': req.body.username }, { $set: { 'content': req.body.content } })
+        .then(() => {
+            res.send("Updated Item")
+        })
+        .catch(err => res.status(404).json(err));
 });
 
 // @route DELETE item/deleteItem 
-// @desc Delete first item in the array
+// @desc Delete item in the array
 // @access Public
 router.delete("/deleteItem", (req, res) => {
-    arr.shift()
-    res.send(arr);
+    const errors = {};
+    let search = { username: req.body.username };
+    item.findOneAndDelete(search)
+        .then(items => {
+            if (!items) {
+                errors.noItems = "There are no items";
+                res.status(404).json(errors);
+            }
+            res.send('Removed');
+        })
+        .catch(err => res.status(404).json(err));
 });
 
 // @route GET item/test 
 // @desc test model
 // @access Public
 router.get("/test", (req, res) => {
-    model.find().then(
-        items => { console.log(items);}
-    ).catch(err => {console.log(err)})
+    const errors = {};
+    item.find()
+        .then(items => {
+            res.json(items);
+        })
+        .catch(err => res.status(404).json({ noItems: "There are no items" }));
 });
 
 module.exports = router;
