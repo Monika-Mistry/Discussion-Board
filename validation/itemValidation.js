@@ -7,6 +7,7 @@ function validateItemInput(data) {
 
     //if the values are not present, change to empty strings
     data.username = !isEmpty(data.username) ? data.username : "";
+    data.email = !isEmpty(data.email) ? data.email : "";
 
     //item validation rules
     if (!validator.isAlphanumeric(data.username)) {
@@ -17,6 +18,10 @@ function validateItemInput(data) {
         errors.username = "Username field is required";
     }
 
+    if(!validator.isEmail(data.email)) {
+        errors.email = "Email invalid";
+    }
+    
     return {
         errors,
         isValid: isEmpty(errors)
