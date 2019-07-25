@@ -90,7 +90,10 @@ router.put("/updateItem", (req, res) => {
         .updateOne(
           { _id: req.body._id },
           {
-            $set: updatedItem
+            $set: {
+              username: updatedItem.username,
+              content: updatedItem.content
+            }
           }
         )
         .then(() => {
@@ -108,28 +111,33 @@ router.delete("/deleteItem", (req, res) => {
   const errors = {};
   let search = { _id: req.body._id };
   let email = req.body.email;
-  item.findById(search).then(item => {
-    bcrypt
-      .compare(item.email, email)
-      .then(isMatch => {
-        if (isMatch) {
-          item
-            .deleteOne()
-            .then(() => {
-              res.json({ success: true });
-            })
-            .catch(err => {
-              res.status(404).json(err);
-            });
-        } else {
-          error.email = "Email incorrect";
-          res.status(404).json(errors);
-        }
-      })
-      .catch(err => {
-        res.status(404).json(err);
-      });
-  });
+  item
+    .findById(search)
+    .then(item => {
+      bcrypt
+        .compare(item.email, email)
+        .then(isMatch => {
+          if (isMatch) {
+            item
+              .remove()
+              .then(() => {
+                res.json({ success: true });
+              })
+              .catch(err => {
+                res.status(404).json(err);
+              });
+          } else {
+            error.email = "Email incorrect";
+            res.status(404).json(errors);
+          }
+        })
+        .catch(err => {
+          res.status(404).json(err);
+        });
+    })
+    .catch(err => {
+      res.status(404).json(err);
+    });
 });
 // @route GET item/test
 // @desc test model
