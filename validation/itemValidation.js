@@ -9,12 +9,12 @@ function validateItemInput(data) {
     data.username = !isEmpty(data.username) ? data.username : "";
 
     //item validation rules
-    if (validator.isEmpty(data.username)) {
-        errors.username = "Username field is required";
-    }
-
     if (!validator.isAlphanumeric(data.username)) {
         errors.username = "Username invalid: must contain letters and numbers only"
+    }
+
+    if (validator.isEmpty(data.username)) {
+        errors.username = "Username field is required";
     }
 
     return {
