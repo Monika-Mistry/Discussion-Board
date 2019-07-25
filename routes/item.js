@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const toArray = require('object-values-to-array');
-const item = require("../models/itemModel.js");
 
-let arr = [];
+const item = require("../models/itemModel.js");
+const validateItemInput = require("../validation/itemValidation");
 
 // @route POST item/addItem 
 // @desc Create an array from JSON
 // @access Public
 router.post("/addItem", (req, res) => {
+    const validate = validateItemInput(req.body);
+    if (!validate.isValid){
+        return res.status(400).json(validate.errors);
+    }
     const newItem = new item({
         username: req.body.username,
         content: req.body.content
