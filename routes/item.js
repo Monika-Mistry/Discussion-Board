@@ -15,7 +15,7 @@ router.post("/addItem", (req, res) => {
     });
     newItem.save()
         .then(() => {
-            res.send("Item added");
+            res.send("Added Item");
         })
         .catch(err => res.status(404).json(err));
 
@@ -42,7 +42,7 @@ router.get("/getItems", (req, res) => {
 // @desc Update item in the array
 // @access Public
 router.put("/updateItem", (req, res) => {
-    item.updateOne({ 'username': req.body.username }, { $set: { 'content': req.body.content } })
+    item.updateOne({ '_id': req.body._id }, { $set: { 'username': req.body.username, 'content': req.body.content } })
         .then(() => {
             res.send("Updated Item")
         })
@@ -54,14 +54,14 @@ router.put("/updateItem", (req, res) => {
 // @access Public
 router.delete("/deleteItem", (req, res) => {
     const errors = {};
-    let search = { username: req.body.username };
+    let search = { '_id': req.body._id };
     item.findOneAndDelete(search)
         .then(items => {
             if (!items) {
                 errors.noItems = "There are no items";
                 res.status(404).json(errors);
             }
-            res.send('Removed');
+            res.send('Removed Item');
         })
         .catch(err => res.status(404).json(err));
 });
