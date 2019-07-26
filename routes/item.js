@@ -1,5 +1,5 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const router = express.Router();
 
 const item = require("../models/itemModel.js");
@@ -44,7 +44,7 @@ router.post("/addItem", (req, res) => {
 router.get("/getAll", (req, res) => {
   const errors = {};
   item
-    .find()
+    .find({}, '-email -__v')
     .then(items => {
       if (!items) {
         errors.noItems = "There are no items";
@@ -61,7 +61,7 @@ router.get("/getAll", (req, res) => {
 router.get("/username", (req, res) => {
   const errors = {};
   item
-    .find(req.body)
+    .find(req.body, '-email -__v')
     .then(items => {
       if (!items) {
         errors.noItems = "There are no items";
@@ -108,48 +108,48 @@ router.put("/updateItem", (req, res) => {
 // @desc Delete item in the array
 // @access Public
 router.delete("/deleteItem", (req, res) => {
-  const errors = {};
+  let errors = {};
   let search = { _id: req.body._id };
   let email = req.body.email;
   item
     .findById(search)
-    .then(item => {
+    .then(item1 => {
       bcrypt
-        .compare(item.email, email)
+        .compare(email, item1.email)
         .then(isMatch => {
           if (isMatch) {
-            item
+            item1
               .remove()
               .then(() => {
                 res.json({ success: true });
               })
               .catch(err => {
-                res.status(404).json(err);
+                res.status(404).send("remove error");
               });
           } else {
-            error.email = "Email incorrect";
-            res.status(404).json(errors);
+            errors.email = "Email incorrect";
+            res.status(200).send("Incorrect Email");
           }
         })
         .catch(err => {
-          res.status(404).json(err);
+          res.status(404).send("compare fail");
         });
     })
     .catch(err => {
-      res.status(404).json(err);
+      res.status(404).send("find error");
     });
 });
+
 // @route GET item/test
 // @desc test model
 // @access Public
 router.get("/test", (req, res) => {
-  const errors = {};
   item
     .find()
     .then(items => {
       res.json(items);
     })
-    .catch(err => res.status(404).json({ noItems: "There are no items" }));
+    .catch(err => res.status(404).json(err));
 });
 
 module.exports = router;

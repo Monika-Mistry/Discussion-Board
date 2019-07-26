@@ -7,10 +7,7 @@ const itemSchema = new Schema({
     required: true
   },
   content: String,
-  email: {
-    type: String,
-    select: false
-  }
+  email: String
 });
 
 module.exports = itemSchema;
